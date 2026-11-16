@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cobro SumUp</title>
+<style>
+body{font-family:Roboto,Arial,sans-serif;margin:0;padding:24px 18px;color:#1b1b1b;text-align:center}
+.amount{font-size:44px;font-weight:700;margin:18px 0 4px}
+.title{font-size:18px;color:#555;margin-bottom:28px}
+a.btn{display:block;background:#0f62fe;color:#fff;text-decoration:none;font-size:22px;font-weight:600;padding:20px;border-radius:12px}
+a.alt{display:inline-block;margin-top:26px;color:#0f62fe;font-size:15px}
+.err{color:#b3261e;font-size:17px;margin-top:30px}
+.small{color:#888;font-size:12px;margin-top:30px;word-break:break-all}
+</style></head><body>
+<div id="ok" hidden>
+<div class="amount" id="amount"></div>
+<div class="title" id="title"></div>
+<a class="btn" id="open" href="#">Cobrar con SumUp</a>
+<a class="alt" id="open2" href="#">Si el bot&oacute;n no abre la app, prueba este</a>
+<div class="small" id="dbg"></div>
+</div>
+<div class="err" id="err" hidden>Faltan datos del cobro en el enlace.</div>
+<script>
+var p=new URLSearchParams(location.search);
+var allowed=['affiliate-key','app-id','total','currency','title','foreign-tx-id'];
+var parts=[];
+allowed.forEach(function(k){var v=p.get(k);if(v!==null&&v!=='')parts.push(k+'='+encodeURIComponent(v));});
+var total=p.get('total')||'';
+if(p.get('affiliate-key')&&/^\d+(\.\d{1,2})?$/.test(total)){
+  var qs=parts.join('&');
+  document.getElementById('amount').textContent=total.replace('.',',')+' '+(p.get('currency')||'EUR');
+  document.getElementById('title').textContent=p.get('title')||'';
+  document.getElementById('open').href='sumupmerchant://pay/1.0?'+qs;
+  document.getElementById('open2').href='intent://pay/1.0?'+qs+'#Intent;scheme=sumupmerchant;end';
+  document.getElementById('dbg').textContent='Ref: '+(p.get('foreign-tx-id')||'-');
+  document.getElementById('ok').hidden=false;
+}else{
+  document.getElementById('err').hidden=false;
+}
+</script>
+</body></html>
